@@ -1,0 +1,54 @@
+﻿@page "/focus"
+@using BlazorApp2.Models;
+@inject IJSRuntime js
+
+<EditForm Model="model">
+   <InputText @ref="inputText" class="form-control" @bind-Value="model" />
+   <button class="btn btn-primary" @onclick="HandleClick">Click me</button>
+
+   <br />
+   <button @onclick="() => textInput.FocusAsync()">Do focus</button>
+   <input @ref="textInput" />
+</EditForm>
+
+<br />
+<br />
+<EditForm Model="person">
+   <div>
+      <label>Name</label>
+      <InputText id="txtPersonName" class="form-control" @bind-Value="@person.Name" />
+   </div>
+   <div>
+      <label>Age</label>
+      <InputText class="form-control" @bind-Value="@person.Age" />
+   </div>
+</EditForm>
+
+@code {
+   string model = "";
+   InputText inputText = default!;
+   ElementReference textInput;
+
+   private Person person = new Person();
+
+   private void HandleClick()
+   {
+      if (inputText.Element.HasValue)
+      {
+         inputText.Element.Value.FocusAsync();
+      }
+   }
+
+   protected override async Task OnAfterRenderAsync(bool firstRender)
+   {
+      if (firstRender)
+      {
+         //await textInput.FocusAsync();
+         if (inputText.Element.HasValue)
+         {
+            //await inputText.Element.Value.FocusAsync();
+            await js.InvokeVoidAsync("focusById", "txtPersonName");
+         }
+      }
+   }
+}

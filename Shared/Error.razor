@@ -1,0 +1,19 @@
+﻿@using Microsoft.Extensions.Logging
+@inject ILogger<Error> logger
+@inject IToastService toastService
+
+<CascadingValue Value=this>
+    @ChildContent
+</CascadingValue>
+
+@*https://www.youtube.com/watch?v=mxOYvu2MWFo*@
+@code {
+    [Parameter]
+    public RenderFragment ChildContent { get; set; }
+
+    public void ProcessError(Exception ex)
+    {
+        toastService.ShowError(ex.Message);
+        logger.LogError(ex, "");
+    }
+}

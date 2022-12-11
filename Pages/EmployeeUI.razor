@@ -1,0 +1,61 @@
+﻿@page "/employee"
+@inject IJSRuntime js
+
+<h3>EmployeeUI</h3>
+<h3>Javascript Isolation</h3>
+
+<button class="btn btn-primary" @onclick="ShowPrompt">Prompt</button>
+<br />
+<button class="btn btn-primary" @onclick="ShowAlert">Alert</button>
+<br />
+<button class="btn btn-primary" @onclick="IncrementCount">Increment Count</button>
+
+<br />
+<br />
+<label>@msg</label>
+<br />
+<label>@counter</label>
+
+@code {
+    [CascadingParameter] public Error Error { get; set; }
+
+
+    IJSObjectReference module;
+    public string msg = string.Empty;
+    public int counter;
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            module = await js.InvokeAsync<IJSObjectReference>("import", "./MyJs.js");
+        }
+    }
+
+    public async Task ShowPrompt()
+    {
+        try
+        {
+            //throw new Exception("Custom error message");
+
+            var message = "What's Your Name?";
+            var res = await module.InvokeAsync<string>("showPrompt", message);
+            msg = "My Name is: " + res;
+        }
+        catch (System.Exception ex)
+        {
+            Error.ProcessError(ex);
+        }
+    }
+
+    public async Task ShowAlert()
+    {
+        await module.InvokeVoidAsync("showAlert", "Welcome...");
+    }
+
+    public async Task IncrementCount()
+    {
+        counter = await module.InvokeAsync<int>("counter.incrementCounter", string.Empty);
+    }
+
+}

@@ -1,5 +1,6 @@
 using BlazorApp2.Data;
 using Blazored.Toast;
+using Fluxor;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Web;
@@ -16,6 +17,13 @@ builder.Services.AddServerSideBlazor();
 builder.Services.AddSingleton<WeatherForecastService>();
 
 builder.Services.AddBlazoredToast();
+
+builder.Services.AddFluxor(options =>
+{
+    options
+      .ScanAssemblies(typeof(Program).Assembly)
+      .UseReduxDevTools();
+});
 
 var app = builder.Build();
 
